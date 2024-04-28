@@ -1,0 +1,112 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+#define MAX_LABEL_LEN 20
+#define MAX_OPCODE_LEN 10
+#define MAX_OPERAND_LEN 10
+#define MAX_SYMBOLS 100
+
+typedef struct {
+    char label[MAX_LABEL_LEN];
+    int address;
+} Symbol;
+
+typedef struct {
+    char opcode[MAX_OPCODE_LEN];
+    int opcode_value;
+} Instruction;
+
+Symbol symbol_table[MAX_SYMBOLS];
+Instruction instruction_table[] = {
+    {"LOAD", 100},
+    {"STORE", 200},
+    {"ADD", 300},
+    {"SUB", 400},
+    {"HALT", 500}
+};
+int symbol_count = 0;
+
+void add_symbol(char *label, int address) {
+    if (symbol_count < MAX_SYMBOLS) {
+        strcpy(symbol_table[symbol_count].label, label);
+        symbol_table[symbol_count].address = address;
+        symbol_count++;
+    } else {
+        fprintf(stderr, "Symbol table full\n");
+        exit(EXIT_FAILURE);
+    }
+}
+
+int search_symbol(char *label) {
+    for (int i = 0; i < symbol_count; i++) {
+        if (strcmp(symbol_table[i].label, label) == 0) {
+            return symbol_table[i].address;
+        }
+    }
+    return -1; // Symbol not found
+}
+
+int main() {
+    char line[100];
+    int location_counter = 0;
+
+    FILE *fp = fopen("assembly_code.asm", "r");
+    if (!fp) {
+        perror("Error opening file");
+        return EXIT_FAILURE;
+    }
+
+    while (fgets(line, sizeof(line), fp)) {
+        char *label, *opcode, *operand;
+        char *token = strtok(line, " \t\n");
+
+        if (token == NULL) continue; // Skip empty lines
+        if (token[strlen(token) - 1] == ':') {
+            // It's a label
+            token[strlen(token) - 1] = '\0'; // Remove colon
+            label = token;
+            add_symbol(label, location_counter);
+            token = strtok(NULL, " \t\n");
+            if (token == NULL) continue;
+        }
+
+        opcode = token;
+        operand = strtok(NULL, " \t\n");
+
+        int opcode_value = -1;
+        for (int i = 0; i < sizeof(instruction_table) / sizeof(instruction_table[0]); i++) {
+            if (strcmp(opcode, instruction_table[i].opcode) == 0) {
+                opcode_value = instruction_table[i].opcode_value;
+                break;
+            }
+        }
+
+        if (opcode_value == -1) {
+            fprintf(stderr, "Invalid opcode: %s\n", opcode);
+            continue;
+        }
+
+        printf("%03d %d ", location_counter, opcode_value);
+        if (operand) {
+            if (isdigit(operand[0]) || (operand[0] == '-' && isdigit(operand[1]))) {
+                printf("%d\n", atoi(operand));
+            } else {
+                int addr = search_symbol(operand);
+                if (addr != -1) {
+                    printf("%d\n", addr);
+                } else {
+                    printf("Unknown symbol: %s\n", operand);
+                }
+            }
+        } else {
+            printf("\n");
+        }
+
+        location_counter++;
+    }
+
+    fclose(fp);
+    return 0;
+}

@@ -1,0 +1,53 @@
+Exp2: character count in word:-
+
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+const int ALPHABET_SIZE = 26;
+
+void countAndPrintCharacterOccurrences(const string& sentence) {
+    int charCounts[ALPHABET_SIZE] = {0};
+
+    for (char ch : sentence) {
+        if (isalpha(ch)) { // Check if the character is an alphabet
+            char lowerCh = tolower(ch); // Convert to lowercase
+            int index = lowerCh - 'a'; // Calculate index
+            charCounts[index]++; // Increment count
+        }
+    }
+
+    // Print character occurrences
+    for (int i = 0; i < ALPHABET_SIZE; ++i) {
+        if (charCounts[i] > 0) {
+            cout << "Character '" << char('a' + i) << "' = " << charCounts[i] << "\n";
+        }
+    }
+}
+
+int main() {
+    string sentence;
+    cout << "Enter a sentence: ";
+    getline(cin, sentence);
+
+    // Count and print character occurrences
+    countAndPrintCharacterOccurrences(sentence);
+
+    return 0;
+}
+
+
+Output:-
+Enter a word: Enter a sentence: Hi everyone how are you
+Character 'a' = 1
+Character 'e' = 4
+Character 'h' = 2
+Character 'i' = 1
+Character 'n' = 1
+Character 'o' = 3
+Character 'r' = 2
+Character 'u' = 1
+Character 'v' = 1
+Character 'w' = 1
+Character 'y' = 2

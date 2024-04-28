@@ -1,0 +1,40 @@
+%{
+int valid_int = 0, valid_float = 0;
+%}
+
+%%
+
+[-+]?[0-9]+ {
+    valid_int++;
+}
+
+[-+]?[0-9]*\.([0-9]+)? {
+    if (yytext[strlen(yytext)-1] != '.')  // Check if it is not ending with a dot
+        valid_float++;
+}
+
+[^0-9\.\+\-]+ ; // Efficiently ignore other sequences
+
+%%
+
+int main() {
+    yylex();
+    if (valid_int > 0 && valid_float == 0)
+        printf("Valid Integer number\n");
+    else if (valid_float > 0)
+        printf("Valid Float number\n");
+    else
+        printf("Not valid Integer/Float number\n");
+    return 0;
+}
+
+int yywrap() {
+    return 1;
+}
+
+
+Steps to execute:- save it in a file with a .l extension
+sudo yum/dnf install flex gcc(to download lex)
+2) flex number_checker.l
+3) gcc -o number_checker lex.yy.c -lfl
+4) ./number_checker

@@ -1,0 +1,48 @@
+Exp 1 word count in sentence:-
+
+#include <iostream>
+#include <string>
+using namespace std;
+const int MAX_WORDS = 100;
+void countAndPrintWordOccurrences() {
+string words[MAX_WORDS];
+int counts[MAX_WORDS] = {0};
+int uniqueWordCount = 0;
+string word;
+while (cin >> word && word != "done") {
+if (word.back() == '.' || word.back() == ',' || word.back() == '!') {
+word.pop_back();
+}
+bool isNewWord = true;
+for (int i = 0; i < uniqueWordCount; ++i) {
+if (words[i] == word) {
+counts[i]++;
+isNewWord = false;
+break;
+}
+}
+if (isNewWord) {
+words[uniqueWordCount] = word;
+counts[uniqueWordCount]++;
+uniqueWordCount++;
+}
+}
+for (int i = 0; i < uniqueWordCount; ++i) {
+cout << "Word \"" << words[i] << "\" = " << counts[i] << "\n";
+}
+}
+int main() {
+cout << "Enter a sentence (type 'done' to finish):\n";
+// Count and print unique word occurrences
+countAndPrintWordOccurrences();
+return 0;
+}
+
+
+OUTPUT: Enter a sentence (type 'done' to finish):
+Hello hello is is is everyone
+done
+Word "Hello" = 1
+Word "hello" = 1
+Word "is" = 3
+Word "everyone" = 1

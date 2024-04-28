@@ -1,0 +1,31 @@
+Lex and yacc tools for checking identifier or not
+
+%{
+#include <stdio.h>
+%}
+
+%%
+
+[a-zA-Z_][a-zA-Z0-9_]*  { printf("Valid Identifier\n"); }
+[^a-zA-Z0-9_ \t\n]+     { printf("Invalid Identifier or Unknown Token\n"); }
+\n                     { /* Ignore newlines or handle as needed */ }
+.                      { printf("Unexpected Character: %c\n", *yytext); }
+
+%%
+
+int main() {
+    yylex();
+    return 0;
+}
+
+int yywrap() {
+    return 1;
+}
+
+
+STEPS TO EXECUTE:
+1) sudo yum install flex
+2)flex identifier.l
+3) sudo yum install gcc
+4) gcc -o identifier lex.yy.c -lfl
+5) ./identifier
